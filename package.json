@@ -83,5 +83,8 @@
     "require": [
       "babel-register"
     ]
+  },
+  "dependencies": {
+    "bulma": "^0.1.0"
   }
 }

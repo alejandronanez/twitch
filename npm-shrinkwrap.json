@@ -717,6 +717,11 @@
       "from": "builtin-modules@>=1.0.0 <2.0.0",
       "resolved": "./node_shrinkwrap/builtin-modules-1.1.1.tgz"
     },
+    "bulma": {
+      "version": "0.1.0",
+      "from": "bulma@latest",
+      "resolved": "./node_shrinkwrap/bulma-0.1.0.tgz"
+    },
     "bytes": {
       "version": "2.3.0",
       "from": "bytes@2.3.0",
