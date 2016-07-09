@@ -1,7 +1,15 @@
-$color: #D3F0FF;
+@import '~bulma/css/bulma.css';
+
+$marginTop: 2em;
 
 body {
-	background: $color;
-	font-family: 'Arial', sans-serif;
-	font-size: 3em;
+	margin-top: 10px;
+}
+
+.streams {
+	margin-top: $marginTop;
+}
+
+.filters {
+	margin-top: $marginTop;
 }
