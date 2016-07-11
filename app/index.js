@@ -29,13 +29,7 @@ function getChannelsData(streamer) {
 // 	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
 // }
 
-function generateChannelElement(data) {
-	const {
-		logo,
-		display_name: displayName,
-		url,
-		status
-	} = data;
+function generateChannelElement({ logo,	displayName, url, status }) {
 
 	const template = `
 		<div class="box stream">
@@ -73,6 +67,7 @@ function generateChannelElement(data) {
 }
 
 function successSubscription(streams) {
+	console.log(streams);
 	const container = document.querySelector('.js-streams');
 	container.innerHTML = '';
 
@@ -85,6 +80,20 @@ function failureSubscription(error) {
 	Error('Something went wrong', error);
 }
 
-const responseStream = getStreamersFromArray(STREAMERS).flatMap(getChannelsData).toArray();
+function getAllStreamsResponseData({ logo, display_name, url, status, name }) {
 
-responseStream.subscribe(successSubscription, failureSubscription);
+	return {
+		displayName: display_name,
+		logo,
+		url,
+		status,
+		name
+	};
+}
+
+const allStreamsResponse = getStreamersFromArray(STREAMERS)
+	.flatMap(getChannelsData)
+	.map(getAllStreamsResponseData)
+	.toArray();
+
+allStreamsResponse.subscribe(successSubscription, failureSubscription);
