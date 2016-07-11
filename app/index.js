@@ -66,8 +66,6 @@ function failureSubscription(error) {
 	Error('Something went wrong', error);
 }
 
-getStreamersFromArray(STREAMERS)
-	.map(getApiData)
-	.subscribe(result => {
-		result.subscribe(successSubscription, failureSubscription);
-	});
+const responseStream = getStreamersFromArray(STREAMERS).flatMap(getApiData);
+
+responseStream.subscribe(successSubscription, failureSubscription);
