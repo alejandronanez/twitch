@@ -13,59 +13,78 @@ const STREAMERS = [
 	'noobs2ninjas'
 ];
 
+function getTwitchURL(resource, streamer) {
+	return `https://api.twitch.tv/kraken/${resource}/${streamer}`;
+}
+
 function getStreamersFromArray(streamers) {
 	return Rx.Observable.from(streamers);
+}
+
+function getChannelsData(streamer) {
+	return Rx.DOM.getJSON(getTwitchURL('channels', streamer));
 }
 
 function getApiData(streamer) {
 	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
 }
 
-// function generateChannelElement(data) {
-// 	const template = `
-// 		<div class="box stream">
-// 			<article class="media">
-// 				<div class="media-left">
-// 					<figure class="image is-128x128">
-// 						<img src="https://placeimg.com/128/128/tech" alt="Image">
-// 					</figure>
-// 				</div>
-// 				<div class="media-content">
-// 					<div class="content">
-// 						<p>
-// 							<strong><a href="" target="_blank">John Smith</a></strong>
-// 							<br>
-// 							<small>twitch.tv/johnsmith</small>
-// 							<br>
-// 							Lorem ipsum dolor sit amet,
-// 						</p>
-// 					</div>
-// 					<nav class="level">
-// 						<div class="level-left">
-// 							<span class="tag is-success">Online</span> /
-// 							<span class="tag is-danger">Offline</span>
-// 						</div>
-// 					</nav>
-// 				</div>
-// 			</article>
-// 		</div>
-// 	`;
+function generateChannelElement(data) {
+	const {
+		logo,
+		display_name,
+		url,
+		status
+	} = data;
 
-// 	const element = document.createElement('div');
-// 	element.classList = 'box stream';
-// 	element.innerHTML = template;
+	const template = `
+		<div class="box stream">
+			<article class="media">
+				<div class="media-left">
+					<figure class="image is-128x128">
+						<img src=${logo} alt="Image">
+					</figure>
+				</div>
+				<div class="media-content">
+					<div class="content">
+						<p>
+							<strong><a href="" target="_blank">${display_name}</a></strong>
+							<br>
+							<small>${url}</small>
+							<br>
+							${status || 'No status'}
+						</p>
+					</div>
+					<nav class="level">
+						<div class="level-left">
+							<span class="tag is-success">Online</span> /
+							<span class="tag is-danger">Offline</span>
+						</div>
+					</nav>
+				</div>
+			</article>
+		</div>
+	`;
 
-// 	return element;
-// }
+	const element = document.createElement('div');
+	element.innerHTML = template;
 
-function successSubscription(stream) {
-	console.log('Stream: ', stream);
+	return element;
+}
+
+function successSubscription(streams) {
+	const container = document.querySelector('.js-streams');
+	container.innerHTML = '';
+
+	streams.forEach(stream => container.appendChild(generateChannelElement(stream)));
+
+	return container;
 }
 
 function failureSubscription(error) {
 	Error('Something went wrong', error);
 }
 
-const responseStream = getStreamersFromArray(STREAMERS).flatMap(getApiData).toArray();
+const responseStream = getStreamersFromArray(STREAMERS).flatMap(getChannelsData).toArray();
 
 responseStream.subscribe(successSubscription, failureSubscription);
