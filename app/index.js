@@ -25,14 +25,14 @@ function getChannelsData(streamer) {
 	return Rx.DOM.getJSON(getTwitchURL('channels', streamer));
 }
 
-function getApiData(streamer) {
-	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
-}
+// function getApiData(streamer) {
+// 	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
+// }
 
 function generateChannelElement(data) {
 	const {
 		logo,
-		display_name,
+		display_name: displayName,
 		url,
 		status
 	} = data;
@@ -48,7 +48,7 @@ function generateChannelElement(data) {
 				<div class="media-content">
 					<div class="content">
 						<p>
-							<strong><a href="" target="_blank">${display_name}</a></strong>
+							<strong><a href="" target="_blank">${displayName}</a></strong>
 							<br>
 							<small>${url}</small>
 							<br>

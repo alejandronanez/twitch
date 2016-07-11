@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "bp",
-  "version": "1.4.0",
+  "name": "twitch",
+  "version": "1.0.0",
   "description": "Boilerplate for SPAs",
   "main": "src/index.js",
   "scripts": {
