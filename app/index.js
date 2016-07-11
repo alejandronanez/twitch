@@ -58,7 +58,7 @@ function getApiData(streamer) {
 // 	return element;
 // }
 
-function successSubscription({ stream }) {
+function successSubscription(stream) {
 	console.log('Stream: ', stream);
 }
 
@@ -66,6 +66,6 @@ function failureSubscription(error) {
 	Error('Something went wrong', error);
 }
 
-const responseStream = getStreamersFromArray(STREAMERS).flatMap(getApiData);
+const responseStream = getStreamersFromArray(STREAMERS).flatMap(getApiData).toArray();
 
 responseStream.subscribe(successSubscription, failureSubscription);

@@ -17,7 +17,8 @@
 		"padded-blocks": "off",
 		"comma-dangle": "off",
 		"arrow-body-style": "off",
-		"import/no-unresolved": "off"
+		"import/no-unresolved": "off",
+		"no-console": "off"
 	},
 	"plugins": [
 		"react"
