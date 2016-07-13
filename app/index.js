@@ -29,7 +29,10 @@ function getStreamsData(streamer) {
 	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
 }
 
-function generateChannelElement({ logo,	displayName, url, status }) {
+function generateChannelElement({ logo,	displayName, url, status, isOnline }) {
+
+	const onlineStatus = isOnline ?
+		'<span class="tag is-success">Online</span>' : '<span class="tag is-danger">Offline</span>';
 
 	const template = `
 		<div class="box stream">
@@ -42,7 +45,7 @@ function generateChannelElement({ logo,	displayName, url, status }) {
 				<div class="media-content">
 					<div class="content">
 						<p>
-							<strong><a href="" target="_blank">${displayName}</a></strong>
+							<strong><a href="${url}" target="_blank">${displayName}</a></strong>
 							<br>
 							<small>${url}</small>
 							<br>
@@ -50,10 +53,7 @@ function generateChannelElement({ logo,	displayName, url, status }) {
 						</p>
 					</div>
 					<nav class="level">
-						<div class="level-left">
-							<span class="tag is-success">Online</span> /
-							<span class="tag is-danger">Offline</span>
-						</div>
+						<div class="level-left">${onlineStatus}</div>
 					</nav>
 				</div>
 			</article>
@@ -67,7 +67,6 @@ function generateChannelElement({ logo,	displayName, url, status }) {
 }
 
 function successSubscription(streams) {
-	console.log(streams);
 	const container = document.querySelector('.js-streams');
 	container.innerHTML = '';
 
@@ -78,17 +77,6 @@ function successSubscription(streams) {
 
 function failureSubscription(error) {
 	Error('Something went wrong', error);
-}
-
-function getAllStreamsResponseData({ logo, display_name, url, status, name }) {
-
-	return {
-		displayName: display_name,
-		logo,
-		url,
-		status,
-		name
-	};
 }
 
 function filterStreamsResponse({ stream, _links }) {
@@ -109,17 +97,12 @@ function filterChannelsResponse({ display_name, status, url, logo, _links }) {
 }
 
 function mergeResponses(responses) {
-	const streamResponses = responses[0];
-	const channelResponses = responses[1];
-
-	const r = streamResponses.map(response => {
-		debugger;
-		return [].concat(
-			response.find(r => r.channelId === response.channelId)
-		)
+	return responses[0].map(stream => {
+		return {
+			...responses[1].find(channel => channel.channelId === stream.channelId),
+			...stream
+		};
 	});
-
-	debugger;
 }
 
 const streams$ = getStreamersFromArray(STREAMERS)
@@ -132,11 +115,7 @@ const channels$ = getStreamersFromArray(STREAMERS)
 	.map(filterChannelsResponse)
 	.toArray();
 
-const response$ = Rx.Observable
+Rx.Observable
 	.forkJoin(streams$, channels$)
 	.map(mergeResponses)
-	.subscribe(x => console.debug(x))
-
-// const response$ = Rx.Observable
-// 	.forkJoin(streams$, channels$)
-// 	.subscribe((x) => console.log(x));
+	.subscribe(successSubscription, failureSubscription);
