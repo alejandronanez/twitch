@@ -25,9 +25,9 @@ function getChannelsData(streamer) {
 	return Rx.DOM.getJSON(getTwitchURL('channels', streamer));
 }
 
-// function getApiData(streamer) {
-// 	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
-// }
+function getStreamsData(streamer) {
+	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
+}
 
 function generateChannelElement({ logo,	displayName, url, status }) {
 
@@ -91,9 +91,52 @@ function getAllStreamsResponseData({ logo, display_name, url, status, name }) {
 	};
 }
 
-const allStreamsResponse = getStreamersFromArray(STREAMERS)
-	.flatMap(getChannelsData)
-	.map(getAllStreamsResponseData)
+function filterStreamsResponse({ stream, _links }) {
+	return {
+		isOnline: !!stream,
+		channelId: _links.channel.toLowerCase()
+	};
+}
+
+function filterChannelsResponse({ display_name, status, url, logo, _links }) {
+	return {
+		displayName: display_name,
+		status,
+		url,
+		logo,
+		channelId: _links.self
+	};
+}
+
+function mergeResponses(responses) {
+	const streamResponses = responses[0];
+	const channelResponses = responses[1];
+
+	const r = streamResponses.map(response => {
+		debugger;
+		return [].concat(
+			response.find(r => r.channelId === response.channelId)
+		)
+	});
+
+	debugger;
+}
+
+const streams$ = getStreamersFromArray(STREAMERS)
+	.flatMap(getStreamsData)
+	.map(filterStreamsResponse)
 	.toArray();
 
-allStreamsResponse.subscribe(successSubscription, failureSubscription);
+const channels$ = getStreamersFromArray(STREAMERS)
+	.flatMap(getChannelsData)
+	.map(filterChannelsResponse)
+	.toArray();
+
+const response$ = Rx.Observable
+	.forkJoin(streams$, channels$)
+	.map(mergeResponses)
+	.subscribe(x => console.debug(x))
+
+// const response$ = Rx.Observable
+// 	.forkJoin(streams$, channels$)
+// 	.subscribe((x) => console.log(x));
