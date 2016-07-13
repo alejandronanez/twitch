@@ -1,6 +1,6 @@
 {
-  "name": "bp",
-  "version": "1.4.0",
+  "name": "twitch",
+  "version": "1.0.0",
   "dependencies": {
     "abab": {
       "version": "1.0.3",
@@ -495,7 +495,7 @@
     },
     "babel-plugin-transform-object-rest-spread": {
       "version": "6.8.0",
-      "from": "babel-plugin-transform-object-rest-spread@>=6.3.13 <7.0.0",
+      "from": "babel-plugin-transform-object-rest-spread@latest",
       "resolved": "./node_shrinkwrap/babel-plugin-transform-object-rest-spread-6.8.0.tgz"
     },
     "babel-plugin-transform-react-display-name": {
