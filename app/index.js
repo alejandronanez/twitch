@@ -24,7 +24,7 @@ function getStreamersFromArray(streamers) {
 
 function handleNetworkError(streamer) {
 	return Rx.Observable.just({
-		logo: 'http://placehold.it/300x300',
+		logo: 'https://placehold.it/300x300',
 		display_name: streamer,
 		url: '#',
 		status: 'This channel no longer exists',
