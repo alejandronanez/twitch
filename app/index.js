@@ -10,7 +10,8 @@ const STREAMERS = [
 	'storbeck',
 	'habathcx',
 	'RobotCaleb',
-	'noobs2ninjas'
+	'noobs2ninjas',
+	'brunofin'
 ];
 
 function getTwitchURL(resource, streamer) {
@@ -21,12 +22,28 @@ function getStreamersFromArray(streamers) {
 	return Rx.Observable.from(streamers);
 }
 
+function handleNetworkError(streamer) {
+	return Rx.Observable.just({
+		logo: 'http://placehold.it/300x300',
+		display_name: streamer,
+		url: '#',
+		status: 'This channel no longer exists',
+		isOnline: false,
+		_links: {
+			self: '#',
+			channel: '#'
+		}
+	});
+}
+
 function getChannelsData(streamer) {
-	return Rx.DOM.getJSON(getTwitchURL('channels', streamer));
+	return Rx.DOM.getJSON(getTwitchURL('channels', streamer))
+		.catch(() => handleNetworkError(streamer));
 }
 
 function getStreamsData(streamer) {
-	return Rx.DOM.getJSON(`https://api.twitch.tv/kraken/streams/${streamer}`);
+	return Rx.DOM.getJSON(getTwitchURL('streams', streamer))
+		.catch(() => handleNetworkError(streamer));
 }
 
 function generateChannelElement({ logo,	displayName, url, status, isOnline }) {
@@ -45,7 +62,7 @@ function generateChannelElement({ logo,	displayName, url, status, isOnline }) {
 				<div class="media-content">
 					<div class="content">
 						<p>
-							<strong><a href="${url}" target="_blank">${displayName}</a></strong>
+							<strong><a href="${url}">${displayName}</a></strong>
 							<br>
 							<small>${url}</small>
 							<br>
@@ -76,7 +93,7 @@ function successSubscription(streams) {
 }
 
 function failureSubscription(error) {
-	Error('Something went wrong', error);
+	console.error('Something went wrong', error);
 }
 
 function filterStreamsResponse({ stream, _links }) {
